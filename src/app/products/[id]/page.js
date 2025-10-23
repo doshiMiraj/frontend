@@ -20,7 +20,7 @@ export default function ProductDetail() {
     if (params.id) {
       fetchProduct();
     }
-  }, [params.id]);
+  }, [params.id, fetchProduct]);
 
   const fetchProduct = async () => {
     try {

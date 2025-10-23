@@ -59,7 +59,7 @@ export default function Orders() {
         {orders.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <p className="text-gray-600 mb-4">
-              You haven't placed any orders yet.
+              You haven&apos;t placed any orders yet.
             </p>
           </div>
         ) : (
