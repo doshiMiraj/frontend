@@ -19,7 +19,7 @@ export default function Cart() {
       return;
     }
     loadCart();
-  }, [user]);
+  }, [user, router]);
 
   const loadCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
