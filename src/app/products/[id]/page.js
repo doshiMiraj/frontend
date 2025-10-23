@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
@@ -16,13 +16,8 @@ export default function ProductDetail() {
   const params = useParams();
   const router = useRouter();
 
-  useEffect(() => {
-    if (params.id) {
-      fetchProduct();
-    }
-  }, [params.id, fetchProduct]);
-
-  const fetchProduct = async () => {
+  // Use useCallback to memoize the fetch function
+  const fetchProduct = useCallback(async () => {
     try {
       const response = await api.get(`/products/${params.id}`);
       setProduct(response.data);
@@ -31,7 +26,13 @@ export default function ProductDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (params.id) {
+      fetchProduct();
+    }
+  }, [params.id, fetchProduct]);
 
   const addToCart = () => {
     if (!user) {
@@ -62,6 +63,14 @@ export default function ProductDetail() {
     alert("Product added to cart!");
   };
 
+  const decreaseQuantity = () => {
+    setQuantity((prev) => Math.max(1, prev - 1));
+  };
+
+  const increaseQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
   if (loading)
     return (
       <>
@@ -78,6 +87,16 @@ export default function ProductDetail() {
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-red-600">{error}</div>
+        </div>
+      </>
+    );
+
+  if (!product)
+    return (
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Product not found</div>
         </div>
       </>
     );
@@ -153,9 +172,7 @@ export default function ProductDetail() {
                         </label>
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() =>
-                              setQuantity((prev) => Math.max(1, prev - 1))
-                            }
+                            onClick={decreaseQuantity}
                             className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center hover:bg-gray-300"
                           >
                             -
@@ -164,7 +181,7 @@ export default function ProductDetail() {
                             {quantity}
                           </span>
                           <button
-                            onClick={() => setQuantity((prev) => prev + 1)}
+                            onClick={increaseQuantity}
                             className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center hover:bg-gray-300"
                           >
                             +
